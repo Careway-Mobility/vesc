@@ -332,6 +332,25 @@ VescPacketSetPos::VescPacketSetPos(double pos) :
 
 /*------------------------------------------------------------------------------------------------*/
 
+VescPacketSetHandbrake::VescPacketSetHandbrake(double current_brake) :
+  VescPacket("SetHandbrake", 5, COMM_SET_HANDBRAKE)
+{
+  int32_t v = static_cast<int32_t>(current_brake * 1000.0);
+
+  *(payload_.first + 1) = static_cast<uint8_t>((static_cast<uint32_t>(v) >> 24) & 0xFF);
+  *(payload_.first + 2) = static_cast<uint8_t>((static_cast<uint32_t>(v) >> 16) & 0xFF);
+  *(payload_.first + 3) = static_cast<uint8_t>((static_cast<uint32_t>(v) >> 8) & 0xFF);
+  *(payload_.first + 4) = static_cast<uint8_t>(static_cast<uint32_t>(v) & 0xFF);
+
+  VescFrame::CRC crc_calc;
+  crc_calc.process_bytes(&(*payload_.first), boost::distance(payload_));
+  uint16_t crc = crc_calc.checksum();
+  *(frame_->end() - 3) = static_cast<uint8_t>(crc >> 8);
+  *(frame_->end() - 2) = static_cast<uint8_t>(crc & 0xFF);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 VescPacketSetServoPos::VescPacketSetServoPos(double servo_pos) :
   VescPacket("SetServoPos", 3, COMM_SET_SERVO_POS)
 {

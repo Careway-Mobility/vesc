@@ -236,6 +236,11 @@ void VescInterface::setPosition(double position)
   send(VescPacketSetPos(position));
 }
 
+void VescInterface::setHandbrake(double current)
+{
+  send(VescPacketSetHandbrake(current));
+}
+
 void VescInterface::setServo(double servo)
 {
   send(VescPacketSetServoPos(servo));

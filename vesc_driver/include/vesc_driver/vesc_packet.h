@@ -181,6 +181,16 @@ public:
 
 /*------------------------------------------------------------------------------------------------*/
 
+class VescPacketSetHandbrake : public VescPacket
+{
+public:
+  VescPacketSetHandbrake(double current);
+
+  //  double current_brake() const;
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
 class VescPacketSetServoPos : public VescPacket
 {
 public:

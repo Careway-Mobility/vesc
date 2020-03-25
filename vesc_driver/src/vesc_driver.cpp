@@ -19,7 +19,8 @@ VescDriver::VescDriver(ros::NodeHandle nh,
         boost::bind(&VescDriver::vescErrorCallback, this, _1)),
   duty_cycle_limit_(private_nh, "duty_cycle", -1.0, 1.0), current_limit_(private_nh, "current"),
   brake_limit_(private_nh, "brake"), speed_limit_(private_nh, "speed"),
-  position_limit_(private_nh, "position"), servo_limit_(private_nh, "servo", 0.0, 1.0),
+  position_limit_(private_nh, "position"), handbrake_limit_(private_nh, "handbrake"),
+  servo_limit_(private_nh, "servo", 0.0, 1.0),
   driver_mode_(MODE_INITIALIZING), fw_version_major_(-1), fw_version_minor_(-1)
 {
   // get vesc serial port address
@@ -54,6 +55,7 @@ VescDriver::VescDriver(ros::NodeHandle nh,
   brake_sub_ = nh.subscribe("commands/motor/brake", 10, &VescDriver::brakeCallback, this);
   speed_sub_ = nh.subscribe("commands/motor/speed", 10, &VescDriver::speedCallback, this);
   position_sub_ = nh.subscribe("commands/motor/position", 10, &VescDriver::positionCallback, this);
+  handbrake_sub_ = nh.subscribe("commands/motor/handbrake", 10, &VescDriver::handbrakeCallback, this);
   servo_sub_ = nh.subscribe("commands/servo/position", 10, &VescDriver::servoCallback, this);
 
   // create a 50Hz timer, used for state machine & polling VESC telemetry
@@ -204,6 +206,18 @@ void VescDriver::positionCallback(const std_msgs::Float64::ConstPtr& position)
     // ROS uses radians but VESC seems to use degrees. Convert to degrees.
     double position_deg = position_limit_.clip(position->data) * 180.0 / M_PI;
     vesc_.setPosition(position_deg);
+  }
+}
+
+/**
+ * @param current Commanded VESC handbrake current in Amps. Any value is accepted by this driver. However,
+ *                note that the VESC may impose a more restrictive bounds on the range depending on
+ *                its configuration.
+ */
+void VescDriver::handbrakeCallback(const std_msgs::Float64::ConstPtr& current)
+{
+  if (driver_mode_ = MODE_OPERATING) {
+    vesc_.setHandbrake(handbrake_limit_.clip(current->data));
   }
 }
 

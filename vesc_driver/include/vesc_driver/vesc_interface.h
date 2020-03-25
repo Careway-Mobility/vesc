@@ -90,6 +90,7 @@ public:
   void setBrake(double brake);
   void setSpeed(double speed);
   void setPosition(double position);
+  void setHandbrake(double current);
   void setServo(double servo);
 
 private:

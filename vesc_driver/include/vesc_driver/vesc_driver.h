@@ -44,6 +44,7 @@ private:
   CommandLimit brake_limit_;
   CommandLimit speed_limit_;
   CommandLimit position_limit_;
+  CommandLimit handbrake_limit_;
   CommandLimit servo_limit_;
 
   // ROS services
@@ -54,6 +55,7 @@ private:
   ros::Subscriber brake_sub_;
   ros::Subscriber speed_sub_;
   ros::Subscriber position_sub_;
+  ros::Subscriber handbrake_sub_;
   ros::Subscriber servo_sub_;
   ros::Timer timer_;
 
@@ -75,6 +77,7 @@ private:
   void brakeCallback(const std_msgs::Float64::ConstPtr& brake);
   void speedCallback(const std_msgs::Float64::ConstPtr& speed);
   void positionCallback(const std_msgs::Float64::ConstPtr& position);
+  void handbrakeCallback(const std_msgs::Float64::ConstPtr& current);
   void servoCallback(const std_msgs::Float64::ConstPtr& servo);
 };
 
